@@ -7,6 +7,8 @@ basic class
 
 import re
 
+from zh2num import get_number
+
 class Extractor(object):
     """
     1. default delete the punctuation
@@ -23,13 +25,17 @@ class Extractor(object):
         (string, {info})
     """
     
-    def __init__(self, delete=False, args=[]):
+    def __init__(self, delete=False, args=[], blur=False, limit=4):
         """
-        delete: delete the found info
+        delete: delete the found info except blur
         args: option
             e.g. ['email', 'number']
+        blur: convert Chinese to pinyin and extract useful numbers
+        limit: parameter for get_number
         """
         self._delete = delete
+        self._blur = blur
+        self._limit = limit
         self.m = ''
         self._email = []
         self._number = {}
@@ -42,15 +48,19 @@ class Extractor(object):
         elif isinstance(args, str):
             self.option = [x.strip() for x in args.split(',')]
         else:
+            self.option = []
             print('Input error. Only delete the punctuation.')
 
-    def reset_param(self, delete=False, args=[]):
+    def reset_param(self, delete=False, args=[], blur=False, limit=4):
         self._delete = delete
+        self._blur = blur
+        self._limit = limit
         if isinstance(args, list):
             self.option = args
         elif isinstance(args, str):
             self.option = [x.strip() for x in args.split(',')]
         else:
+            self.option = []
             print('Input error. Only delete the punctuation.')
         
     def _get_result(self):
@@ -89,6 +99,8 @@ class Extractor(object):
         for func in self.option:
             self.options2func[func]
         self._filter()
+        if self._blur:
+            self._number['blur'] = get_number(self.m, self._limit)
         return self._get_result()
 
     def _filter(self):
@@ -96,17 +108,17 @@ class Extractor(object):
         delete the punctuation
         """
         pattern = u"[\s+\.\!\-\/_,$%^*(+\"\']+|[+——！】【，。？?:、：~@#￥%……&*“”（）]+"
-        self.m = re.sub(pattern, "", self.m, re.U)
+        self.m = re.sub(pattern, "", self.m)
 
     def _preprocess(self):
         """
         if the input string is str, try to convert it to unicode
         """
-        if isinstance(self.m, str):
+        if not isinstance(self.m, unicode):
             try:
                 self.m = unicode(self.m, 'utf-8')
             except e:
-                print('Convert str to unicode raise error: ' + e)
+                print('Convert to unicode raise error: ' + e)
 
     def _email_filter(self):
         self._email = re.findall(r'[\w\.-]+@[\w\.-]+', self.m)
