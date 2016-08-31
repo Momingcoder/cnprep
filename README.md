@@ -1,16 +1,29 @@
 # cnprep
 
-## 中文文本预处理
+## Chinese text preprocess
 
-返回一个类，里面的属性包括：
+You can extract numbers, email, website, emoji, tex, and delete spaces, punctuations.
 
-* 数值（可以对金额、日期、手机号、QQ等分类）
-* Email
-* Emoji/颜文字
-* 网址
-* 中英文（全角半角）标点符号
-* 淘宝微信号
+## Install
 
-## 同音词匹配
+```
+pip install cnprep
+```
 
-通过拼音的模糊匹配，找出相应的内容
+## Usage
+
+```Python
+from cnprep import Extractor
+ext = Extractor(delete=True, args=['email', 'number'], blur=True, limit=5)
+ext.extract(message)
+```
+
+```
+delete: delete the found info (except blur)
+args: option
+    e.g. ['email', 'number'] or 'email, number'
+blur: convert Chinese to pinyin and extract useful numbers
+limit: parameter for get_number
+```
+
+Also, you can use `ext.reset_param()` to reset the parameters.
