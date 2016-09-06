@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(
   name = 'cnprep',
-  version = '0.0.4',
+  version = '0.0.5',
   description = 'A lib for Chinese text preprocessing',
   author = 'MomingCoder',
   author_email = 'a398445075@gmail.com',
