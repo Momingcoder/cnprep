@@ -11,9 +11,11 @@ setup(
   author = 'MomingCoder',
   author_email = 'a398445075@gmail.com',
   url = 'https://github.com/momingcoder/cnprep', # use the URL to the github repo
+  download_url = 'https://github.com/momingcoder/cnprep/tarball/0.0.4',
   license = 'MIT',
   keywords = ['Chinese', 'text', 'preprocess'], # arbitrary keywords
   classifiers = ['Topic :: Text Processing'],
-  packages = find_packages(exclude=['contrib', 'docs', 'tests']),
+  packages = find_packages(),
   install_requires = ['xpinyin'],
+  platform = ['Windows', 'Linux', 'Mac'],
 )
