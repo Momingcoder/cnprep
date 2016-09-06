@@ -11,7 +11,7 @@ setup(
   author = 'MomingCoder',
   author_email = 'a398445075@gmail.com',
   url = 'https://github.com/momingcoder/cnprep', # use the URL to the github repo
-  download_url = 'https://github.com/momingcoder/cnprep/tarball/0.0.4',
+  download_url = 'https://github.com/momingcoder/cnprep/tarball/0.0.5',
   license = 'MIT',
   keywords = ['Chinese', 'text', 'preprocess'], # arbitrary keywords
   classifiers = ['Topic :: Text Processing'],

@@ -25,7 +25,7 @@ class Extractor(object):
         (string, {info})
     """
     
-    def __init__(self, delete=False, args=[], blur=False, limit=4):
+    def __init__(self, delete=False, args=[], limit=4):
         """
         delete: delete the found info except blur
         args: option
@@ -34,14 +34,16 @@ class Extractor(object):
         limit: parameter for get_number
         """
         self._delete = delete
-        self._blur = blur
         self._limit = limit
         self.m = ''
         self._email = []
-        self._number = {}
+        self._telephone = []
+        self._QQ = []
+        self._wechat = []
         self._web_addr = []
         self._emoji = []
         self._tex = []
+        self._blur = []
 
         if isinstance(args, list):
             self.option = args
@@ -51,9 +53,8 @@ class Extractor(object):
             self.option = []
             print('Input error. Only delete the punctuation.')
 
-    def reset_param(self, delete=False, args=[], blur=False, limit=4):
+    def reset_param(self, delete=False, args=[], limit=4):
         self._delete = delete
-        self._blur = blur
         self._limit = limit
         if isinstance(args, list):
             self.option = args
@@ -71,10 +72,13 @@ class Extractor(object):
 
         self.options2attr = {
             'email': self._email,
-            'number': self._number,
+            'telephone': self._telephone,
+            'QQ' : self._QQ,
+            'wechat': self._wechat,
             'web': self._web_addr,
             'emoji': self._emoji,
             'tex': self._tex,
+            'blur': self._blur,
         }
 
         for item in self.option:
@@ -90,17 +94,21 @@ class Extractor(object):
 
         self.options2func = {
             'email': self._email_filter(),
-            'number': self._number_filter(),
+            'telephone': self._telephone_filter(),
+            'QQ' : self._QQ_filter(),
+            'wechat': self._wechat_filter(),
             'web': self._web_filter(),
             'emoji': self._emoji_filter(),
             'tex': self._tex_filter(),
         }
 
         for func in self.option:
+            if func == "blur":
+                continue
             self.options2func[func]
         self._filter()
-        if self._blur:
-            self._number['blur'] = get_number(self.m, self._limit)
+        if 'blur' in self.option:
+            self._blur = get_number(self.m, self._limit)
         return self._get_result()
 
     def _filter(self):
@@ -139,19 +147,35 @@ class Extractor(object):
             others[i] = re.sub(r'@@', '@', others[i])
         self._email.extend(others)
 
-    def _number_filter(self):
-        # usually 4 or more
+    def _telephone_filter(self):
         # telephone: xxx-xxxx-xxxx
         seg = re.findall(r'(\d{3})[-\s]?(\d{4})[-\s]?(\d{4})', self.m)
         if self._delete and seg != []:
             self.m = re.sub(r'(\d{3})[-\s]?(\d{4})[-\s]?(\d{4})', '', self.m)
         for index in range(len(seg)):
             seg[index] = ''.join(list(seg[index]))
-        self._number['telephone'] = seg
-        # others (maybe QQ or something)
-        self._number['QQ'] = re.findall(r'\d{5,10}', self.m)
-        if self._delete and self._number['QQ'] != []:
+        self._telephone = seg
+
+    def _QQ_filter(self):
+        # maybe QQ or something
+        self._QQ = re.findall(r'\d{5,10}', self.m)
+        if self._delete and self._QQ != []:
             self.m = re.sub(r'\d{5,10}', '', self.m)
+
+    def _wechat_filter(self):
+        # maybe wechat
+        pattern = re.compile(u'微信|v信|weixin|wx|wechat')
+        mtc = pattern.search(self.m, re.I)
+        seq = []
+        while mtc != None:
+            seq.extend(re.findall(r'\w{5,16}', self.m[max(0, mtc.start()-25):mtc.start()]))
+            seq.extend(re.findall(r'\w{5,16}', self.m[mtc.end():min(mtc.end()+25, len(self.m))]))
+            mtc = pattern.search(self.m[mtc.end():], re.I)
+        if seq != []:
+            self._wechat.extend(seq)
+            if self._delete:
+                for s in self._wechat:
+                    self.m = re.sub(s, '', self.m)
 
     def _web_filter(self):
         # only extract http(s)

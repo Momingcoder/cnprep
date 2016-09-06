@@ -39,6 +39,7 @@ special_char = {
 
 pinyin2number = {
     u'ling': 0,
+    u'yao': 1,
     u'yi': 1,
     u'er': 2,
     u'san': 3,
