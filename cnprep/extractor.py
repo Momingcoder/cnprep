@@ -129,23 +129,23 @@ class Extractor(object):
                 print('Convert to unicode raise error: ' + e)
 
     def _email_filter(self):
-        self._email = re.findall(r'[\w\.-]+@[\w\.-]+', self.m)
+        self._email = re.findall(r'[\w\.-]+@+[\w\.-]+[\.]+[\w\.-]+', self.m)
         if self._delete and self._email != []:
-            self.m = re.sub(r'[\w\.-]+@[\w\.-]+', '', self.m)
+            self.m = re.sub(r'[\w\.-]+@+[\w\.-]+[\.]+[\w\.-]+', '', self.m)
         # @ => at
-        others = re.findall(r'[\w\.-]+\s?at\s?[\w\.-]+', self.m)
+        others = re.findall(r'[\w\.-]+.?at.?[\w\.-]+[\.]+[\w\.-]+', self.m, re.I)
         if self._delete and others != []:
-            self.m = re.sub(r'[\w\.-]+\s?at\s?[\w\.-]+', '', self.m)
-        for i in range(len(others)):
-            others[i] = re.sub(r'\s?at\s?', '@', others[i])
+            self.m = re.sub(r'[\w\.-]+.?at.?[\w\.-]+[\.]+[\w\.-]+', '', self.m, re.I)
+        # for i in range(len(others)):
+        #     others[i] = re.sub(r'.?at.?', '@', others[i])
         self._email.extend(others)
-        # @ => @@
-        others = re.findall(r'[\w\.-]+@@[\w\.-]+', self.m)
-        if self._delete and others != []:
-            self.m = re.sub(r'[\w\.-]+@@[\w\.-]+', '', self.m)
-        for i in range(len(others)):
-            others[i] = re.sub(r'@@', '@', others[i])
-        self._email.extend(others)
+        # # @ => @@
+        # others = re.findall(r'[\w\.-]+@@[\w\.-]+', self.m)
+        # if self._delete and others != []:
+        #     self.m = re.sub(r'[\w\.-]+@@[\w\.-]+', '', self.m)
+        # for i in range(len(others)):
+        #     others[i] = re.sub(r'@@', '@', others[i])
+        # self._email.extend(others)
 
     def _telephone_filter(self):
         # telephone: xxx-xxxx-xxxx

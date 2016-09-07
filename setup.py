@@ -6,12 +6,12 @@ from setuptools import setup, find_packages
 
 setup(
   name = 'cnprep',
-  version = '0.1.0',
+  version = '0.1.1',
   description = 'A lib for Chinese text preprocessing',
   author = 'MomingCoder',
   author_email = 'a398445075@gmail.com',
   url = 'https://github.com/momingcoder/cnprep', # use the URL to the github repo
-  download_url = 'https://github.com/momingcoder/cnprep/tarball/0.1.0',
+  download_url = 'https://github.com/momingcoder/cnprep/tarball/0.1.1',
   license = 'MIT',
   keywords = ['Chinese', 'text', 'preprocess'], # arbitrary keywords
   classifiers = ['Topic :: Text Processing'],

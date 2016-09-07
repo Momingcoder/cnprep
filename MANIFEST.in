@@ -1,5 +1,3 @@
 include LICENSE.txt
 include README.rst
 include cnprep
-
-__version__ = 0.1.0
