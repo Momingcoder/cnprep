@@ -166,11 +166,14 @@ class Extractor(object):
         # maybe wechat
         pattern = re.compile(u'微信|v信|weixin|wx|wechat')
         mtc = pattern.search(self.m, re.I)
+        m = self.m
         seq = []
+        wechat_len = 25
         while mtc != None:
-            seq.extend(re.findall(r'\w{5,16}', self.m[max(0, mtc.start()-25):mtc.start()]))
-            seq.extend(re.findall(r'\w{5,16}', self.m[mtc.end():min(mtc.end()+25, len(self.m))]))
-            mtc = pattern.search(self.m[mtc.end():], re.I)
+            seq.extend(re.findall(r'\w{5,20}', m[max(0, mtc.start()-wechat_len):mtc.start()]))
+            seq.extend(re.findall(r'\w{5,20}', m[mtc.end():(mtc.end()+wechat_len)]))
+            m = m[mtc.end():]
+            mtc = pattern.search(m, re.I)
         if seq != []:
             self._wechat.extend(seq)
             if self._delete:
