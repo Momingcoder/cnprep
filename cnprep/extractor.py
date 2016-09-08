@@ -85,10 +85,24 @@ class Extractor(object):
             info[item] = self.options2attr[item]
         return (self.m, info)
 
+    def _clear(self):
+        """
+        clear attr
+        """
+        self._email = []
+        self._telephone = []
+        self._QQ = []
+        self._wechat = []
+        self._web_addr = []
+        self._emoji = []
+        self._tex = []
+        self._blur = []
+
     def extract(self, m):
         """
         extract info specified in option
         """
+        self._clear()
         self.m = m
         self._preprocess()
 
