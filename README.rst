@@ -20,7 +20,7 @@ Usage
 ::
 
     from cnprep import Extractor
-    ext = Extractor(delete=True, args=['email', 'number'], blur=True, limit=5)
+    ext = Extractor(delete=True, args=['email', 'number'], limit=5)
     ext.extract(message)
 
 ::
