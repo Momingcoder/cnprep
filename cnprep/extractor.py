@@ -163,6 +163,8 @@ class Extractor(object):
 
     def _telephone_filter(self):
         # telephone: xxx-xxxx-xxxx
+        pre = r'(13\d|145|147|15\d|18\d|10\d|12\d|17\d|400|800)'
+        pattern = pre + r'[-\s]?(\d{4})[-\s]?(\d{4})'
         seg = re.findall(r'(\d{3})[-\s]?(\d{4})[-\s]?(\d{4})', self.m)
         if self._delete and seg != []:
             self.m = re.sub(r'(\d{3})[-\s]?(\d{4})[-\s]?(\d{4})', '', self.m)
