@@ -107,19 +107,19 @@ class Extractor(object):
         self._preprocess()
 
         self.options2func = {
-            'email': self._email_filter(),
-            'telephone': self._telephone_filter(),
-            'QQ' : self._QQ_filter(),
-            'wechat': self._wechat_filter(),
-            'web': self._web_filter(),
-            'emoji': self._emoji_filter(),
-            'tex': self._tex_filter(),
+            'email': self._email_filter,
+            'telephone': self._telephone_filter,
+            'QQ' : self._QQ_filter,
+            'wechat': self._wechat_filter,
+            'web': self._web_filter,
+            'emoji': self._emoji_filter,
+            'tex': self._tex_filter,
         }
 
         for func in self.option:
             if func == "blur":
                 continue
-            self.options2func[func]
+            self.options2func[func]()
         self._filter()
         if 'blur' in self.option:
             self._blur = get_number(self.m, self._limit)
