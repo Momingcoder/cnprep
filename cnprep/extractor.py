@@ -20,11 +20,11 @@ class Extractor(object):
 
     input:
         one line string
-    
+
     output:
         (string, {info})
     """
-    
+
     def __init__(self, delete=False, args=[], limit=4):
         """
         delete: delete the found info except blur
@@ -63,7 +63,7 @@ class Extractor(object):
         else:
             self.option = []
             print('Input error. Only delete the punctuation.')
-        
+
     def _get_result(self):
         """
         get the result
@@ -163,9 +163,11 @@ class Extractor(object):
 
     def _telephone_filter(self):
         # telephone: xxx-xxxx-xxxx
-        seg = re.findall(r'(\d{3})[-\s]?(\d{4})[-\s]?(\d{4})', self.m)
+        pre = r'(13\d|145|147|15\d|18\d|10\d|12\d|17\d|400|800)'
+        pattern = pre + r'[-\s]?(\d{4})[-\s]?(\d{4})'
+        seg = re.findall(pattern, self.m)
         if self._delete and seg != []:
-            self.m = re.sub(r'(\d{3})[-\s]?(\d{4})[-\s]?(\d{4})', '', self.m)
+            self.m = re.sub(pattern, '', self.m)
         for index in range(len(seg)):
             seg[index] = ''.join(list(seg[index]))
         self._telephone = seg
@@ -195,10 +197,13 @@ class Extractor(object):
                     self.m = re.sub(s, '', self.m)
 
     def _web_filter(self):
-        # only extract http(s)
-        self._web_addr = re.findall(r'(https?://[^\s]+)', self.m)
+        # only extract http(s) and www
+        # only support ASCII
+        self._web_addr = re.findall(r'(https?://[ -~]+)', self.m)
+        self._web_addr.extend(re.findall(r'(www.[ -~]+)', self.m))
         if self._delete and self._web_addr != []:
-            self.m = re.sub(r'(https?://[^\s]+)', '', self.m)
+            self.m = re.sub(r'(https?://[ -~]+)', '', self.m)
+            self.m = re.sub(r'(www.[ -~]+)', '', self.m)
 
     def _emoji_filter(self):
         try:

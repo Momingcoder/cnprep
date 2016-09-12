@@ -35,7 +35,11 @@ Usage
         tex
         wechat
         blur (Ⅰ①壹...)
-    limit: parameter for get_number (blur) 
+    limit: parameter for get_number (blur)
 
 
 Also, you can use ''ext.reset_param()'' to reset the parameters.
+
+Attention
+-----------
+The URL extractor only support 'http(s)' and 'www' with ASCII
