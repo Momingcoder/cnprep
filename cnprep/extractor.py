@@ -163,8 +163,6 @@ class Extractor(object):
 
     def _telephone_filter(self):
         # telephone: xxx-xxxx-xxxx
-        pre = r'(13\d|145|147|15\d|18\d|10\d|12\d|17\d|400|800)'
-        pattern = pre + r'[-\s]?(\d{4})[-\s]?(\d{4})'
         seg = re.findall(r'(\d{3})[-\s]?(\d{4})[-\s]?(\d{4})', self.m)
         if self._delete and seg != []:
             self.m = re.sub(r'(\d{3})[-\s]?(\d{4})[-\s]?(\d{4})', '', self.m)
@@ -180,16 +178,16 @@ class Extractor(object):
 
     def _wechat_filter(self):
         # maybe wechat
-        pattern = re.compile(u'微信|v信|weixin|wx|wechat')
-        mtc = pattern.search(self.m, re.I)
+        pattern = re.compile(u'微信|v信|weixin|wx|wechat', re.I)
+        mtc = pattern.search(self.m)
         m = self.m
-        seq = []
+        seq = set()
         wechat_len = 25
         while mtc != None:
-            seq.extend(re.findall(r'\w{5,20}', m[max(0, mtc.start()-wechat_len):mtc.start()]))
-            seq.extend(re.findall(r'\w{5,20}', m[mtc.end():(mtc.end()+wechat_len)]))
+            seq |= set(re.findall(r'\w{5,20}', m[max(0, mtc.start()-wechat_len):mtc.start()]))
+            seq |= set(re.findall(r'\w{5,20}', m[mtc.end():(mtc.end()+wechat_len)]))
             m = m[mtc.end():]
-            mtc = pattern.search(m, re.I)
+            mtc = pattern.search(m)
         if seq != []:
             self._wechat.extend(seq)
             if self._delete:
