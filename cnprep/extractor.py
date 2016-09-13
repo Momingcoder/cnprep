@@ -25,22 +25,19 @@ class Extractor(object):
         (string, {info})
     """
 
-    def __init__(self, delete=False, args=[], limit=4):
+    def __init__(self, args=[], limit=4):
         """
-        delete: delete the found info except blur
         args: option
-            e.g. ['email', 'number']
-        blur: convert Chinese to pinyin and extract useful numbers
-        limit: parameter for get_number
+            e.g. ['email', 'url']
+        limit: parameter for get_number (blur)
         """
-        self._delete = delete
         self._limit = limit
         self.m = ''
         self._email = []
         self._telephone = []
         self._QQ = []
         self._wechat = []
-        self._web_addr = []
+        self._url = []
         self._emoji = []
         self._tex = []
         self._blur = []
@@ -53,8 +50,7 @@ class Extractor(object):
             self.option = []
             print('Input error. Only delete the punctuation.')
 
-    def reset_param(self, delete=False, args=[], limit=4):
-        self._delete = delete
+    def reset_param(self, args=[], limit=4):
         self._limit = limit
         if isinstance(args, list):
             self.option = args
@@ -75,7 +71,7 @@ class Extractor(object):
             'telephone': self._telephone,
             'QQ' : self._QQ,
             'wechat': self._wechat,
-            'web': self._web_addr,
+            'url': self._url,
             'emoji': self._emoji,
             'tex': self._tex,
             'blur': self._blur,
@@ -93,7 +89,7 @@ class Extractor(object):
         self._telephone = []
         self._QQ = []
         self._wechat = []
-        self._web_addr = []
+        self._url = []
         self._emoji = []
         self._tex = []
         self._blur = []
@@ -106,23 +102,24 @@ class Extractor(object):
         self.m = m
         self._preprocess()
 
-        self.options2func = {
-            'email': self._email_filter,
-            'telephone': self._telephone_filter,
-            'QQ' : self._QQ_filter,
-            'wechat': self._wechat_filter,
-            'web': self._web_filter,
-            'emoji': self._emoji_filter,
-            'tex': self._tex_filter,
-        }
-
-        for func in self.option:
-            if func == "blur":
-                continue
-            self.options2func[func]()
+        if self.option != []:
+            self._url_filter()
+            if 'tex' in self.option:
+                self._tex_filter()
+            if 'email' in self.option:
+                self._email_filter()
+            if 'telephone' in self.option:
+                self._telephone_filter()
+            if 'QQ' in self.option:
+                self._QQ_filter()
+            if 'emoji' in self.option:
+                self._emoji_filter()
+            if 'wechat' in self.option:
+                self._wechat_filter()
         self._filter()
         if 'blur' in self.option:
             self._blur = get_number(self.m, self._limit)
+
         return self._get_result()
 
     def _filter(self):
@@ -144,12 +141,14 @@ class Extractor(object):
 
     def _email_filter(self):
         self._email = re.findall(r'[\w\.-]+@+[\w\.-]+[\.]+[\w\.-]+', self.m)
-        if self._delete and self._email != []:
-            self.m = re.sub(r'[\w\.-]+@+[\w\.-]+[\.]+[\w\.-]+', '', self.m)
+        if self._email != []:
+            for item in self._email:
+                self.m = re.sub(item, '', self.m)
         # @ => at
         others = re.findall(r'[\w\.-]+.?at.?[\w\.-]+[\.]+[\w\.-]+', self.m, re.I)
-        if self._delete and others != []:
-            self.m = re.sub(r'[\w\.-]+.?at.?[\w\.-]+[\.]+[\w\.-]+', '', self.m, re.I)
+        if others != []:
+            for item in others:
+                self.m = re.sub(item, '', self.m, re.I)
         # for i in range(len(others)):
         #     others[i] = re.sub(r'.?at.?', '@', others[i])
         self._email.extend(others)
@@ -166,7 +165,7 @@ class Extractor(object):
         pre = r'(13\d|145|147|15\d|18\d|10\d|12\d|17\d|400|800)'
         pattern = pre + r'[-\s]?(\d{4})[-\s]?(\d{4})'
         seg = re.findall(pattern, self.m)
-        if self._delete and seg != []:
+        if seg != []:
             self.m = re.sub(pattern, '', self.m)
         for index in range(len(seg)):
             seg[index] = ''.join(list(seg[index]))
@@ -174,53 +173,67 @@ class Extractor(object):
 
     def _QQ_filter(self):
         # maybe QQ or something
-        self._QQ = re.findall(r'\d{5,10}', self.m)
-        if self._delete and self._QQ != []:
-            self.m = re.sub(r'\d{5,10}', '', self.m)
+        QQ = re.findall(r'\d{5,}', self.m)
+        for item in QQ:
+            if len(item) > 10:
+                QQ.remove(item)
+        if QQ != []:
+            self._QQ = QQ
+            for item in QQ:
+                self.m = re.sub(item, '', self.m)
 
     def _wechat_filter(self):
         # maybe wechat
         pattern = re.compile(u'微信|v信|weixin|wx|wechat', re.I)
         mtc = pattern.search(self.m)
         m = self.m
-        seq = set()
-        wechat_len = 25
+        neighbor = 25
+        wechat = []
         while mtc != None:
-            seq |= set(re.findall(r'\w{5,20}', m[max(0, mtc.start()-wechat_len):mtc.start()]))
-            seq |= set(re.findall(r'\w{5,20}', m[mtc.end():(mtc.end()+wechat_len)]))
-            m = m[mtc.end():]
+            # print(mtc.start(), mtc.end())
+            wechat.extend(re.findall(r'\w{5,20}', m[max(0, mtc.start()-neighbor):mtc.start()]))
+            wechat.extend(re.findall(r'\w{5,20}', m[mtc.end():min((mtc.end()+neighbor), len(m))]))
+            m = m[min(mtc.end()+neighbor-5, len(m)):]
             mtc = pattern.search(m)
-        if seq != []:
-            self._wechat.extend(seq)
-            if self._delete:
-                for s in self._wechat:
-                    self.m = re.sub(s, '', self.m)
+        if wechat != []:
+            self._wechat = wechat
+            for item in wechat:
+                self.m = re.sub(item, '', self.m)
+        # wechat = re.findall(r'\w{5,}', self.m)
+        # for item in wechat:
+        #     if len(item) > 20:
+        #         wechat.remove(item)
+        # if wechat != []:
+        #     self.wechat = wechat
+        #     for item in wechat:
+        #         self.m = re.sub(item, '', self.m)
 
-    def _web_filter(self):
+    def _url_filter(self):
         # only extract http(s) and www
         # only support ASCII
-        self._web_addr = re.findall(r'(https?://[ -~]+)', self.m)
-        self._web_addr.extend(re.findall(r'(www.[ -~]+)', self.m))
-        if self._delete and self._web_addr != []:
+        self._url = re.findall(r'(https?://[ -~]+)', self.m)
+        if self._url != []:
             self.m = re.sub(r'(https?://[ -~]+)', '', self.m)
-            self.m = re.sub(r'(www.[ -~]+)', '', self.m)
+        self._url.extend(re.findall(r'(www.[ -~]+)', self.m))
+        self.m = re.sub(r'(www.[ -~]+)', '', self.m)
 
     def _emoji_filter(self):
         try:
             # UCS-4
             self._emoji = re.findall(u'[\U00010000-\U0010ffff]', self.m)
-            if self._delete and self._emoji != []:
+            if self._emoji != []:
                 self.m = re.sub(u'[\U00010000-\U0010ffff]', '', self.m)
         except re.error:
             # UCS-2
             self._emoji = re.findall(u'[\uD800-\uDBFF][\uDC00-\uDFFF]', self.m)
-            if self._delete and self._emoji != []:
+            if self._emoji != []:
                 self.m = re.sub(u'[\uD800-\uDBFF][\uDC00-\uDFFF]', '', self.m)
 
     def _tex_filter(self):
         # this may look ugly...
         self._tex = re.findall(r'\${1,2}.+?\${1,2}', self.m)
-        if self._delete and self._tex != []:
-            self.m = re.sub(r'\${1,2}.+?\${1,2}', '', self.m)
+        if self._tex != []:
+            for item in self._tex:
+                self.m = re.sub(item, '', self.m)
         for i in range(len(self._tex)):
             self._tex[i] = re.sub(r'\$+', '$$', self._tex[i])

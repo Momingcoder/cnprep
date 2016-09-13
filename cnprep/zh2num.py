@@ -23,6 +23,7 @@ special_char = {
     u'Ⅶ': 7,
     u'Ⅷ': 8,
     u'Ⅸ': 9,
+    u'Ⅹ': 10,
     # with circle
     u'①': 1,
     u'②': 2,
@@ -33,6 +34,7 @@ special_char = {
     u'⑦': 7,
     u'⑧': 8,
     u'⑨': 9,
+    u'⑩': 10,
     # others
     u'〇': 0,
 }
@@ -49,6 +51,7 @@ pinyin2number = {
     u'qi': 7,
     u'ba': 8,
     u'jiu': 9,
+    u'shi': 10,
 }
 
 

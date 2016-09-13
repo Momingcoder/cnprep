@@ -20,12 +20,11 @@ Usage
 ::
 
     from cnprep import Extractor
-    ext = Extractor(delete=True, args=['email', 'number'], limit=5)
+    ext = Extractor(args=['email', 'number'], limit=5)
     ext.extract(message)
 
 ::
 
-    delete: delete the found info (except blur)
     args: option
         e.g. ['email', 'telephone'] or 'email, telephone'
         email
