@@ -75,11 +75,12 @@ class Extractor(object):
             'emoji': self._emoji,
             'tex': self._tex,
             'blur': self._blur,
+            'message': self.m,
         }
 
         for item in self.option:
             info[item] = self.options2attr[item]
-        return (self.m, info)
+        return info
 
     def _clear(self):
         """
@@ -104,10 +105,11 @@ class Extractor(object):
 
         if self.option != []:
             self._url_filter()
+            self._email_filter()
             if 'tex' in self.option:
                 self._tex_filter()
-            if 'email' in self.option:
-                self._email_filter()
+            # if 'email' in self.option:
+            #     self._email_filter()
             if 'telephone' in self.option:
                 self._telephone_filter()
             if 'QQ' in self.option:
@@ -140,18 +142,19 @@ class Extractor(object):
                 print('Convert to unicode raise error: ' + e)
 
     def _email_filter(self):
-        self._email = re.findall(r'[\w\.-]+@+[\w\.-]+[\.]+[\w\.-]+', self.m)
+        self._email = re.findall(r'[\w\.-]+@+[\w\.-]+\.[\w\.-]+', self.m)
         if self._email != []:
             for item in self._email:
                 self.m = re.sub(item, '', self.m)
         # @ => at
-        others = re.findall(r'[\w\.-]+.?at.?[\w\.-]+[\.]+[\w\.-]+', self.m, re.I)
+        others = re.findall(r'[\w\.-]+.?at.?[\w\.-]+\.[\w\.-]+', self.m, re.I)
         if others != []:
+            self._email.extend(others)
             for item in others:
-                self.m = re.sub(item, '', self.m, re.I)
+                self.m = re.sub(item, '', self.m)
+                # print(item)
         # for i in range(len(others)):
         #     others[i] = re.sub(r'.?at.?', '@', others[i])
-        self._email.extend(others)
         # # @ => @@
         # others = re.findall(r'[\w\.-]+@@[\w\.-]+', self.m)
         # if self._delete and others != []:
@@ -161,7 +164,7 @@ class Extractor(object):
         # self._email.extend(others)
 
     def _telephone_filter(self):
-        # telephone: xxx-xxxx-xxxx
+        # telephone: xxx-xxxx-xxxx | xxx xxxx xxxx | xxxxxxxxxxx
         pre = r'(13\d|145|147|15\d|18\d|10\d|12\d|17\d|400|800)'
         pattern = pre + r'[-\s]?(\d{4})[-\s]?(\d{4})'
         seg = re.findall(pattern, self.m)
@@ -184,16 +187,18 @@ class Extractor(object):
 
     def _wechat_filter(self):
         # maybe wechat
-        pattern = re.compile(u'微信|v信|weixin|wx|wechat', re.I)
+        pattern = re.compile(u'微信|v信|weixin|wx|wechat|vx|威信|维信', re.I)
         mtc = pattern.search(self.m)
         m = self.m
         neighbor = 25
         wechat = []
         while mtc != None:
             # print(mtc.start(), mtc.end())
-            wechat.extend(re.findall(r'\w{5,20}', m[max(0, mtc.start()-neighbor):mtc.start()]))
-            wechat.extend(re.findall(r'\w{5,20}', m[mtc.end():min((mtc.end()+neighbor), len(m))]))
-            m = m[min(mtc.end()+neighbor-5, len(m)):]
+            wechat.extend(re.findall(r'\w{5,20}',
+                        m[max(0, mtc.start() - neighbor) : mtc.start()]))
+            wechat.extend(re.findall(r'\w{5,20}',
+                        m[mtc.end() : min((mtc.end() + neighbor), len(m))]))
+            m = m[min(mtc.end() + neighbor - 5, len(m)) :]
             mtc = pattern.search(m)
         if wechat != []:
             self._wechat = wechat
@@ -209,13 +214,18 @@ class Extractor(object):
         #         self.m = re.sub(item, '', self.m)
 
     def _url_filter(self):
-        # only extract http(s) and www
         # only support ASCII
         self._url = re.findall(r'(https?://[ -~]+)', self.m)
         if self._url != []:
             self.m = re.sub(r'(https?://[ -~]+)', '', self.m)
         self._url.extend(re.findall(r'(www.[ -~]+)', self.m))
         self.m = re.sub(r'(www.[ -~]+)', '', self.m)
+        # pattern = r'[!-~]+.[(com|cn|net|xin|ltd|store|vip|cc|game|mom|lol|work|pub|club|xyz|top|ren|bid|loan|red|biz|mobi|me|win|link|wang|date|party|online|site|tech|website|space|live|studio|press|news|video|click|trade|science|wiki|design|pics|photo|help|gift|rocks|org|band|market|software|social|lawyer|engineer|gov.cn|name|info|tv|asia|co|so)][!-~]+'
+        # pattern = r'[!-~]+\.[(com|cn|edu|wiki)][!-~]*'
+        # self._url = re.findall(pattern, self.m)
+        # if self._url != []:
+        #     for item in self._url:
+        #         self.m = re.sub(item, '', self.m)
 
     def _emoji_filter(self):
         try:

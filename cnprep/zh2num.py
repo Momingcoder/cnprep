@@ -84,14 +84,14 @@ def get_number(message, limit=4):
     """
     words = pinyin.get_pinyin(message).split('-')
     numbers = []
-    tmp = ''
+    tmp = u''
     count = 0
     for w in words:
         if re.search(r'\w', w) is None:
             for s in list(w):
                 if s in special_char.keys():
                     count += 1
-                    tmp += str(special_char[s])
+                    tmp += unicode(special_char[s])
                 else:
                     if count >= limit:
                         numbers.append(tmp)
@@ -99,7 +99,7 @@ def get_number(message, limit=4):
                     tmp = ''
         elif w in pinyin2number.keys():
             count += 1
-            tmp += str(pinyin2number[w])
+            tmp += unicode(pinyin2number[w])
         else:
             if count >= limit:
                 numbers.append(tmp)
