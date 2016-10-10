@@ -152,6 +152,14 @@ class Extractor(object):
             self._email.extend(others)
             for item in others:
                 self.m = re.sub(item, '', self.m)
+
+        # . => dot && @ => dot
+        others = re.findall(r'[\w\.-]+.?at.?[\w\.-]+.?dot.?[\w\.-]+', self.m, re.I)
+        if others != []:
+            self._email.extend(others)
+            for item in others:
+                self.m = re.sub(item, '', self.m)
+
                 # print(item)
         # for i in range(len(others)):
         #     others[i] = re.sub(r'.?at.?', '@', others[i])
@@ -215,11 +223,11 @@ class Extractor(object):
 
     def _url_filter(self):
         # only support ASCII
-        self._url = re.findall(r'(https?://[ -~]+)', self.m)
+        self._url = re.findall(r'(https?://[ -~]+)', self.m, flags=re.I)
         if self._url != []:
-            self.m = re.sub(r'(https?://[ -~]+)', '', self.m)
-        self._url.extend(re.findall(r'(www.[ -~]+)', self.m))
-        self.m = re.sub(r'(www.[ -~]+)', '', self.m)
+            self.m = re.sub(r'(https?://[ -~]+)', '', self.m, flags=re.I)
+        self._url.extend(re.findall(r'(www.[ -~]+)', self.m, flags=re.I))
+        self.m = re.sub(r'(www.[ -~]+)', '', self.m, flags=re.I)
         # pattern = r'[!-~]+.[(com|cn|net|xin|ltd|store|vip|cc|game|mom|lol|work|pub|club|xyz|top|ren|bid|loan|red|biz|mobi|me|win|link|wang|date|party|online|site|tech|website|space|live|studio|press|news|video|click|trade|science|wiki|design|pics|photo|help|gift|rocks|org|band|market|software|social|lawyer|engineer|gov.cn|name|info|tv|asia|co|so)][!-~]+'
         # pattern = r'[!-~]+\.[(com|cn|edu|wiki)][!-~]*'
         # self._url = re.findall(pattern, self.m)

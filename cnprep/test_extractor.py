@@ -17,12 +17,12 @@ class ExtractorTestCase(unittest.TestCase):
 
     def test_url(self):
         msg = u'谷歌https://www.google.com/推特\
-                https://twitter.com/非死不可www.facebook.com'
+                https://twitter.com/非死不可wWw.facebook.com'
         ext = Extractor(['url'])
         self.assertEqual(ext.extract(msg)['url'],
                         [u'https://www.google.com/',
                         u'https://twitter.com/',
-                        u'www.facebook.com'])
+                        u'wWw.facebook.com'])
 
     def test_QQ(self):
         msg = u'16548425或者1994 or 16841654648431'
@@ -44,10 +44,12 @@ class ExtractorTestCase(unittest.TestCase):
 
     def test_email(self):
         msg = u'一般的abc@gmail.com 二班的123 at email.edu.cn \
-                没有 call me at there'
+                没有 call me at there 或者 123 At yahoo Dot cn'
         ext = Extractor(['email'])
         self.assertEqual(ext.extract(msg)['email'],
-                        [u'abc@gmail.com', u'123 at email.edu.cn'])
+                        [u'abc@gmail.com',
+                        u'123 at email.edu.cn',
+                        u'123 At yahoo Dot cn'])
 
     def test_tex(self):
         msg = u'$$e^{i\pi}+1=0$$被称为最美公式，一般的也有$\lambda=\sum_ix_i$'
