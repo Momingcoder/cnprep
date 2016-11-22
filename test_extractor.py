@@ -3,7 +3,7 @@
 
 import unittest
 
-from extractor import Extractor
+from cnprep.extractor import Extractor
 
 class ExtractorTestCase(unittest.TestCase):
     """
