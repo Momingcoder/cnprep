@@ -7,7 +7,7 @@ basic class
 
 import re
 
-from zh2num import get_number
+from .zh2num import get_number
 
 class Extractor(object):
     """
@@ -101,7 +101,7 @@ class Extractor(object):
         """
         self._clear()
         self.m = m
-        self._preprocess()
+        # self._preprocess()
 
         if self.option != []:
             self._url_filter()
@@ -131,30 +131,30 @@ class Extractor(object):
         pattern = u"[\s+\.\!\-\/_,$%^*(+\"\']+|[+——！】【，。？?:、：~@#￥%……&*“”（）]+"
         self.m = re.sub(pattern, "", self.m)
 
-    def _preprocess(self):
-        """
-        if the input string is str, try to convert it to unicode
-        """
-        if not isinstance(self.m, unicode):
-            try:
-                self.m = unicode(self.m, 'utf-8')
-            except e:
-                print('Convert to unicode raise error: ' + e)
+    # def _preprocess(self):
+    #     """
+    #     if the input string is str, try to convert it to unicode
+    #     """
+    #     if not isinstance(self.m, unicode):
+    #         try:
+    #             self.m = unicode(self.m, 'utf-8')
+    #         except e:
+    #             print('Convert to unicode raise error: ' + e)
 
     def _email_filter(self):
-        self._email = re.findall(r'[\w\.-]+@+[\w\.-]+\.[\w\.-]+', self.m)
+        self._email = re.findall(r'[\w\.-]+@+[\w\.-]+\.[\w\.-]+', self.m, re.A)
         if self._email != []:
             for item in self._email:
                 self.m = re.sub(item, '', self.m)
         # @ => at
-        others = re.findall(r'[\w\.-]+.?at.?[\w\.-]+\.[\w\.-]+', self.m, re.I)
+        others = re.findall(r'[\w\.-]+.?at.?[\w\.-]+\.[\w\.-]+', self.m, re.I | re.A)
         if others != []:
             self._email.extend(others)
             for item in others:
                 self.m = re.sub(item, '', self.m)
 
         # . => dot && @ => dot
-        others = re.findall(r'[\w\.-]+.?at.?[\w\.-]+.?dot.?[\w\.-]+', self.m, re.I)
+        others = re.findall(r'[\w\.-]+.?at.?[\w\.-]+.?dot.?[\w\.-]+', self.m, re.I | re.A)
         if others != []:
             self._email.extend(others)
             for item in others:
@@ -203,9 +203,9 @@ class Extractor(object):
         while mtc != None:
             # print(mtc.start(), mtc.end())
             wechat.extend(re.findall(r'\w{5,20}',
-                        m[max(0, mtc.start() - neighbor) : mtc.start()]))
+                        m[max(0, mtc.start() - neighbor) : mtc.start()], re.A))
             wechat.extend(re.findall(r'\w{5,20}',
-                        m[mtc.end() : min((mtc.end() + neighbor), len(m))]))
+                        m[mtc.end() : min((mtc.end() + neighbor), len(m))], re.A))
             m = m[min(mtc.end() + neighbor - 5, len(m)) :]
             mtc = pattern.search(m)
         if wechat != []:

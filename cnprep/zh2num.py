@@ -14,44 +14,44 @@ pinyin = Pinyin()
 
 special_char = {
     # Roman
-    u'Ⅰ': 1,
-    u'Ⅱ': 2,
-    u'Ⅲ': 3,
-    u'Ⅳ': 4,
-    u'Ⅴ': 5,
-    u'Ⅵ': 6,
-    u'Ⅶ': 7,
-    u'Ⅷ': 8,
-    u'Ⅸ': 9,
-    u'Ⅹ': 10,
+    'Ⅰ': '1',
+    'Ⅱ': '2',
+    'Ⅲ': '3',
+    'Ⅳ': '4',
+    'Ⅴ': '5',
+    'Ⅵ': '6',
+    'Ⅶ': '7',
+    'Ⅷ': '8',
+    'Ⅸ': '9',
+    'Ⅹ': '10',
     # with circle
-    u'①': 1,
-    u'②': 2,
-    u'③': 3,
-    u'④': 4,
-    u'⑤': 5,
-    u'⑥': 6,
-    u'⑦': 7,
-    u'⑧': 8,
-    u'⑨': 9,
-    u'⑩': 10,
+    '①': '1',
+    '②': '2',
+    '③': '3',
+    '④': '4',
+    '⑤': '5',
+    '⑥': '6',
+    '⑦': '7',
+    '⑧': '8',
+    '⑨': '9',
+    '⑩': '10',
     # others
-    u'〇': 0,
+    '〇': '0',
 }
 
 pinyin2number = {
-    u'ling': 0,
-    u'yao': 1,
-    u'yi': 1,
-    u'er': 2,
-    u'san': 3,
-    u'si': 4,
-    u'wu': 5,
-    u'liu': 6,
-    u'qi': 7,
-    u'ba': 8,
-    u'jiu': 9,
-    u'shi': 10,
+    'ling': '0',
+    'yao': '1',
+    'yi': '1',
+    'er': '2',
+    'san': '3',
+    'si': '4',
+    'wu': '5',
+    'liu': '6',
+    'qi': '7',
+    'ba': '8',
+    'jiu': '9',
+    'shi': '10',
 }
 
 
@@ -84,14 +84,14 @@ def get_number(message, limit=4):
     """
     words = pinyin.get_pinyin(message).split('-')
     numbers = []
-    tmp = u''
+    tmp = ''
     count = 0
     for w in words:
-        if re.search(r'\w', w) is None:
+        if re.search(r'\W', w, re.A):
             for s in list(w):
                 if s in special_char.keys():
                     count += 1
-                    tmp += unicode(special_char[s])
+                    tmp += special_char[s]
                 else:
                     if count >= limit:
                         numbers.append(tmp)
@@ -99,7 +99,7 @@ def get_number(message, limit=4):
                     tmp = ''
         elif w in pinyin2number.keys():
             count += 1
-            tmp += unicode(pinyin2number[w])
+            tmp += pinyin2number[w]
         else:
             if count >= limit:
                 numbers.append(tmp)

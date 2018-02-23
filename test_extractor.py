@@ -16,61 +16,61 @@ class ExtractorTestCase(unittest.TestCase):
         self.assertIsInstance(ext.reset_param(['web', 'telephone']), object)
 
     def test_url(self):
-        msg = u'谷歌https://www.google.com/推特\
+        msg = '谷歌https://www.google.com/推特\
                 https://twitter.com/非死不可wWw.facebook.com'
         ext = Extractor(['url'])
         self.assertEqual(ext.extract(msg)['url'],
-                        [u'https://www.google.com/',
-                        u'https://twitter.com/',
-                        u'wWw.facebook.com'])
+                        ['https://www.google.com/',
+                        'https://twitter.com/',
+                        'wWw.facebook.com'])
 
     def test_QQ(self):
-        msg = u'16548425或者1994 or 16841654648431'
+        msg = '16548425或者1994 or 16841654648431'
         ext = Extractor(['QQ'])
         self.assertEqual(ext.extract(msg)['QQ'],
-                        [u'16548425'])
+                        ['16548425'])
 
     def test_wechat(self):
-        msg = u'wechat:weixin2000 or 一些 like this 微信号：wei2016xin'
+        msg = 'wechat:weixin2000 or 一些 like this 微信号：wei2016xin'
         ext = Extractor(['wechat'])
         self.assertEqual(ext.extract(msg)['wechat'],
-                        [u'weixin2000', u'wei2016xin'])
+                        ['weixin2000', 'wei2016xin'])
 
     def test_telephone(self):
-        msg = u'手机号155-1555-5515或者154 4567 1234也许11121211212'
+        msg = '手机号155-1555-5515或者154 4567 1234也许11121211212'
         ext = Extractor(['telephone'])
         self.assertEqual(ext.extract(msg)['telephone'],
-                        [u'15515555515', u'15445671234'])
+                        ['15515555515', '15445671234'])
 
     def test_email(self):
-        msg = u'一般的abc@gmail.com 二班的123 at email.edu.cn \
+        msg = '一般的abc@gmail.com 二班的123 at email.edu.cn \
                 没有 call me at there 或者 123 At yahoo Dot cn'
         ext = Extractor(['email'])
         self.assertEqual(ext.extract(msg)['email'],
-                        [u'abc@gmail.com',
-                        u'123 at email.edu.cn',
-                        u'123 At yahoo Dot cn'])
+                        ['abc@gmail.com',
+                        '123 at email.edu.cn',
+                        '123 At yahoo Dot cn'])
 
     def test_tex(self):
-        msg = u'$$e^{i\pi}+1=0$$被称为最美公式，一般的也有$\lambda=\sum_ix_i$'
+        msg = '$$e^{i\pi}+1=0$$被称为最美公式，一般的也有$\lambda=\sum_ix_i$'
         ext = Extractor(['tex'])
         self.assertEqual(ext.extract(msg)['tex'],
-                        [u'$$e^{i\pi}+1=0$$', u'$$\lambda=\sum_ix_i$$'])
+                        ['$$e^{i\pi}+1=0$$', '$$\lambda=\sum_ix_i$$'])
 
     def test_emoji(self):
-        msg = u'\U00010000\U00010001'
+        msg = '\U00010000\U00010001'
         ext = Extractor(['emoji'])
         self.assertEqual(ext.extract(msg)['emoji'],
-                        [u'\U00010000', u'\U00010001'])
+                        ['\U00010000', '\U00010001'])
 
     def test_blur(self):
-        msg = u'吾儿要溜，其实Ⅷ⑦'
+        msg = '吾儿要溜，其实Ⅷ⑦'
         ext = Extractor(['blur'])
         self.assertEqual(ext.extract(msg)['blur'],
-                        [u'521671087'])
+                        ['521671087'])
 
     def test_combination(self):
-        msg = u'给你一个网址\
+        msg = '给你一个网址\
                 https://123456789?tel=15512345678?wechat=weixin1234。\
                 再来个邮箱什么的abc123[at]email.com，留个QQ:123456，\
                 午起罢溜司儿。都开始用微信了weiwei_xinxin。找不到就打电话\
@@ -78,11 +78,11 @@ class ExtractorTestCase(unittest.TestCase):
         ext = Extractor(['blur', 'wechat', 'url', 'email', 'QQ'])
         self.assertEqual(ext.extract(msg),
                 {
-                    'email': [u'abc123[at]email.com'],
-                    'QQ': [u'123456'],
-                    'wechat': [u'weiwei_xinxin'],
-                    'url': [u'https://123456789?tel=15512345678?wechat=weixin1234'],
-                    'blur': [u'578642'],
+                    'email': ['abc123[at]email.com'],
+                    'QQ': ['123456'],
+                    'wechat': ['weiwei_xinxin'],
+                    'url': ['https://123456789?tel=15512345678?wechat=weixin1234'],
+                    'blur': ['578642'],
                 })
 
 
