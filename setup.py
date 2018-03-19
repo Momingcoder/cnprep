@@ -11,12 +11,12 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name = 'cnprep',
-    version = '0.1.11',
+    version = '0.1.12',
     description = 'A lib for Chinese text preprocessing',
     author = 'Keming Yang',
     author_email = 'a398445075@gmail.com',
     url = 'https://github.com/momingcoder/cnprep',
-    download_url = 'https://github.com/momingcoder/cnprep/tarball/0.1.11',
+    download_url = 'https://github.com/momingcoder/cnprep/tarball/0.1.12',
     license = 'MIT',
     keywords = ['Chinese', 'text', 'preprocess'],
     classifiers = [
