@@ -2,8 +2,8 @@
 cnprep
 ===========
 
-.. image:: https://travis-ci.org/Momingcoder/cnprep.svg?branch=master
-    :target: https://travis-ci.org/Momingcoder/cnprep
+.. image:: https://travis-ci.org/kemingy/cnprep.svg?branch=master
+    :target: https://travis-ci.org/kemingy/cnprep
 
 Chinese text preprocess
 ---------------------------
